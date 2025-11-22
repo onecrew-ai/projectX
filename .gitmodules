@@ -14,3 +14,7 @@
 	path = src/botx-control-gz
 	url = https://github.com/onecrew-ai/botx-control-gz
 	branch = main
+[submodule "src/botx-description"]
+	path = src/botx-description
+	url = https://github.com/onecrew-ai/botx-description
+	branch = main
