@@ -14,3 +14,7 @@
 	path = src/botx-description
 	url = https://github.com/onecrew-ai/botx-description
 	branch = main
+[submodule "documents/botx-document"]
+	path = documents/botx-document
+	url = https://github.com/onecrew-ai/botx-document
+	branch = main
