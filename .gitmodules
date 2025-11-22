@@ -6,3 +6,7 @@
 	path = src/botx-slam
 	url = https://github.com/onecrew-ai/botx-slam
 	branch = main
+[submodule "src/botx-ui"]
+	path = src/botx-ui
+	url = https://github.com/onecrew-ai/botx-ui
+	branch = main
