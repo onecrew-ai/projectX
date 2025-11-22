@@ -18,3 +18,7 @@
 	path = documents/botx-document
 	url = https://github.com/onecrew-ai/botx-document
 	branch = main
+[submodule "design/botx-design"]
+	path = design/botx-design
+	url = git@github.com:onecrew-ai/botx-design.git
+	branch = main
