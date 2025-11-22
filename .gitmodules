@@ -1,7 +1,3 @@
-[submodule "documents/botx_document"]
-	path = documents/botx_document
-	url = https://github.com/onecrew-ai/botx-document
-	branch = main
 [submodule "src/botx-slam"]
 	path = src/botx-slam
 	url = https://github.com/onecrew-ai/botx-slam
