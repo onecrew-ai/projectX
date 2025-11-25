@@ -112,9 +112,3 @@ git push
 
 If you add or remove submodules, remember to mention `.gitmodules` changes in the PR and include the submodule path in the commit so CI and reviewers can validate the new package.
 
-
-## Want this changed for the repo?
-If you'd like I can:
-- change `setup_ws.sh` to default to `humble`,
-- update `.devcontainer/*/devcontainer.json` `BASE_IMAGE` to a public `ros:humble`, or
-- add example `launch` and debug configs in `.vscode/` to make debugging easier in the container.
