@@ -19,7 +19,7 @@ To begin development in a containerized environment:
 
    ![Reopen in Container](https://github.com/LCAS/ros2_pkg_template/assets/47870260/52b26ae9-ffe9-4e7c-afb9-88cee88f870f)
 
-   Then this will promote you with the following two options:
+   Then this will prompt you with the following two options:
    ![image](https://github.com/user-attachments/assets/d0885c75-59de-4b5d-a8b7-c38bf02444d4)
 
    You may select the base image according to your targeted application. For instance, if the nodes do not require GPU processing tasks, it is preferable to use the default devcontainer as it is more lightweight.
