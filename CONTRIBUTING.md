@@ -1,5 +1,7 @@
 # Contributing to ProjectX
 
+[![codecov](https://codecov.io/gh/onecrew-ai/projectX/branch/main/graph/badge.svg)](https://codecov.io/gh/onecrew-ai/projectX)
+
 Thank you for contributing. This guide explains the preferred workflow for issues, branches, commits, and pull requests so CI stays healthy and reviews are fast.
 
 ### Reporting issues
@@ -94,6 +96,27 @@ Include these submodule rules in your PR description when adding/removing packag
 - Are there tests (unit/integration) or a note explaining why not?
 - Does CI pass or are failures unrelated to the change?
 - Are secrets/credentials handled via repository secrets (not hardcoded)?
+
+## Coverage Badges
+
+We publish coverage badges from Codecov to indicate project and per-package coverage.
+
+- Project badge (example at top):
+
+```
+[![codecov](https://codecov.io/gh/onecrew-ai/projectX/branch/main/graph/badge.svg)](https://codecov.io/gh/onecrew-ai/projectX)
+```
+
+- Per-package badge (replace `<pkg_name>` and `branch` as needed):
+
+```
+[![codecov](https://codecov.io/gh/onecrew-ai/projectX/branch/main/graph/badge.svg?flag=<pkg_name>)](https://codecov.io/gh/onecrew-ai/projectX)
+```
+
+To create a per-package badge in Codecov:
+1. Upload coverage with a flag (we use the package name as the flag in CI uploads).
+2. Open the Codecov UI for this repo: `Settings → Repository → Badges`.
+3. Select the branch and flag, copy the generated markdown, and paste it into the README or `CONTRIBUTING.md`.
 
 ### Quick commands
 

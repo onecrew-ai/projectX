@@ -50,6 +50,22 @@ ros2 launch <package> <launch_file.launch.py>
 - `ros-ci.yml` runs workspace build/test. Check the matrix distro in that file (`jazzy` by default here).
 - `dev-container.yml` builds devcontainer images. The workflow expects to be able to pull `BASE_IMAGE`. If images are private, add secrets `REGISTRY_USERNAME` and `REGISTRY_PASSWORD` in the repo (Settings → Secrets → Actions).
 
+## Coverage badges
+
+You can add Codecov badges to docs to show overall and per-package coverage. Example markdown for the overall project badge:
+
+```markdown
+[![codecov](https://codecov.io/gh/onecrew-ai/projectX/branch/main/graph/badge.svg)](https://codecov.io/gh/onecrew-ai/projectX)
+```
+
+For per-package badges (replace `<pkg_name>`):
+
+```markdown
+[![codecov](https://codecov.io/gh/onecrew-ai/projectX/branch/main/graph/badge.svg?flag=<pkg_name>)](https://codecov.io/gh/onecrew-ai/projectX)
+```
+
+Create these badges in the Codecov UI under `Settings → Repository → Badges` once coverage uploads for the desired flag/branch exist.
+
 ## Useful commands
 
 ```bash

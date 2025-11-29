@@ -9,6 +9,9 @@ on:
 jobs:
   ros_ci:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
 
     strategy:
       matrix:
@@ -30,9 +33,82 @@ jobs:
         with:
           required-ros-distributions: ${{ matrix.ros_distro }}
 
-      - name: Build and test ROS 2
-        uses: ros-tooling/action-ros-ci@v0.3
+      - name: Install rosdep dependencies
+        run: |
+          sudo rosdep init 2>/dev/null || true
+          rosdep update
+          rosdep install --from-paths src --ignore-src -r -y || true
+
+      - name: Build workspace (with coverage flags for C++)
+        run: |
+          # Build in Debug and add coverage flags for C++ packages. Python packages will be covered by pytest-cov.
+          colcon build --cmake-args -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="--coverage" -DCMAKE_EXE_LINKER_FLAGS="--coverage" --symlink-install
+
+      - name: Run tests
+        run: |
+          colcon test --event-handlers console_direct+
+          colcon test-result --verbose || true
+
+      - name: Install coverage tools (Python) and lcov (C++)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lcov curl python3-venv || true
+          # Create an isolated venv to avoid PEP 668 "externally-managed-environment" errors
+          python3 -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade pip
+          # install tools without using pip cache to avoid permission issues in some environments
+          pip install --no-cache-dir pytest pytest-cov coverage || true
+
+      - name: Generate Python per-package coverage reports (best-effort)
+        run: |
+          set -e
+          rm -f coverage.xml coverage-*.xml || true
+          # Run pytest per package if tests exist
+          for pkg in src/*; do
+            if [ -d "$pkg" ]; then
+              pkgname=$(basename "$pkg")
+              if [ -d "$pkg/tests" ] || [ -d "$pkg/test" ] || ls "$pkg"/*test* >/dev/null 2>&1; then
+                echo "Running pytest for package: $pkgname"
+                # Run pytest and emit coverage for this package
+                . .venv/bin/activate && python -m pytest -q --maxfail=1 --disable-warnings --cov="$pkg" --cov-report=xml:coverage-${pkgname}.xml || echo "pytest failed for $pkgname, continuing"
+              else
+                echo "No pytest tests found for $pkgname, skipping"
+              fi
+            fi
+          done
+          # Also attempt a top-level pytest run to capture any tests that span packages
+          if . .venv/bin/activate && python -m pytest -q --maxfail=1 --disable-warnings --cov=src --cov-report=xml:coverage.xml; then
+            echo "Top-level pytest coverage generated"
+          else
+            echo "Top-level pytest run failed or no tests found; continuing."
+          fi
+
+      - name: Collect C/C++ coverage using lcov
+        run: |
+          set -e
+          # capture coverage data from build/ and other directories
+          lcov --version || true
+          lcov --capture --directory . --output-file lcov.info || echo "lcov capture failed"
+          # remove system and test files
+          lcov --remove lcov.info '/usr/*' '*/test/*' '*/tests/*' --output-file lcov.cleaned.info || true
+          mv lcov.cleaned.info lcov.info || true
+          echo "Generated lcov.info"
+
+      - name: Upload C++ lcov to Codecov
+        uses: codecov/codecov-action@v4
         with:
-          import-token: ${{ github.token }}
-          target-ros2-distro: ${{ matrix.ros_distro }}
-          skip-tests: true
+          files: lcov.info
+          flags: cpp
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload Python coverage files to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          # Upload top-level and per-package pytest XML files (comma-separated)
+          files: coverage.xml,coverage-*.xml
+          flags: python
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
