@@ -1,0 +1,46 @@
+# Codecov configuration for ProjectX
+
+codecov:
+  # Require CI to pass before Codecov marks status
+  require_ci_to_pass: yes
+
+coverage:
+  precision: 2
+  round: down
+  status:
+    # Project-wide status target
+    project:
+      default:
+        target: 80
+    # Patch (PR) status target
+    patch:
+      default:
+        target: 70
+        # threshold can be a positive or negative number to allow small regressions
+        threshold: 0
+
+ignore:
+  # Files and directories excluded from coverage reporting
+  - "docs/*"
+  - "screenshots/*"
+  - "scripts/*"
+  - "docker/*"
+  - ".devcontainer/*"
+  - "tests/*"
+
+comment:
+  # Controls the comment layout Codecov posts to PRs
+  layout: "header, diff, files"
+  behavior: default
+
+# Notes:
+# - Add a Codecov GitHub Action step to your CI to upload coverage reports.
+# - For private repositories, set the repository secret `CODECOV_TOKEN` and configure the uploader step to use it.
+# Example GitHub Actions snippet (after running tests and producing coverage):
+#
+# - name: Upload coverage to Codecov
+#   uses: codecov/codecov-action@v4
+#   with:
+#     files: ./coverage.xml
+#   env:
+#     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
