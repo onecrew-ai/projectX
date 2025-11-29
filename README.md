@@ -1,5 +1,6 @@
 # ProjectX
 
+[![ROS CI](https://github.com/onecrew-ai/projectX/actions/workflows/ros-ci.yml/badge.svg?branch=main)](https://github.com/onecrew-ai/projectX/actions/workflows/ros-ci.yml)
 [![codecov](https://codecov.io/gh/onecrew-ai/projectX/branch/main/graph/badge.svg)](https://codecov.io/gh/onecrew-ai/projectX)
 
 This repository contains the ProjectX ROS2 workspace, development container configuration, and CI workflows used by the project. It is no longer a template — the README below explains how to set up the workspace locally or in a devcontainer, how to run CI-related tasks, and how to contribute.
