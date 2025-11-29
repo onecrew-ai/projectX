@@ -9,6 +9,9 @@ on:
 jobs:
   ros_ci:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
 
     strategy:
       matrix:
@@ -93,28 +96,19 @@ jobs:
           mv lcov.cleaned.info lcov.info || true
           echo "Generated lcov.info"
 
-      - name: Upload coverage to Codecov (lcov + per-package python)
+      - name: Upload C++ lcov to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: lcov.info
+          flags: cpp
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: |
-          set -e
-          # Use the Codecov bash uploader to upload multiple reports and attach flags
-          if [ -f lcov.info ]; then
-            echo "Uploading C++ lcov.info as flag=cpp"
-            bash <(curl -s https://codecov.io/bash) -f lcov.info -F cpp || echo "codecov lcov upload failed"
-          else
-            echo "No lcov.info found, skipping C++ upload"
-          fi
 
-          if [ -f coverage.xml ]; then
-            echo "Uploading top-level Python coverage.xml as flag=python"
-            bash <(curl -s https://codecov.io/bash) -f coverage.xml -F python || echo "codecov python upload failed"
-          fi
-
-          for f in coverage-*.xml; do
-            if [ -f "$f" ]; then
-              pkg=$(echo "$f" | sed -E 's/coverage-(.*).xml/\1/')
-              echo "Uploading $f with flag=$pkg"
-              bash <(curl -s https://codecov.io/bash) -f "$f" -F "$pkg" || echo "codecov upload failed for $f"
-            fi
-          done
+      - name: Upload Python coverage files to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          # Upload top-level and per-package pytest XML files (comma-separated)
+          files: coverage.xml,coverage-*.xml
+          flags: python
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
