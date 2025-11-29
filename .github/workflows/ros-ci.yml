@@ -50,9 +50,13 @@ jobs:
       - name: Install coverage tools (Python) and lcov (C++)
         run: |
           sudo apt-get update
-          sudo apt-get install -y lcov curl || true
-          python3 -m pip install --upgrade pip
-          python3 -m pip install pytest pytest-cov coverage || true
+          sudo apt-get install -y lcov curl python3-venv || true
+          # Create an isolated venv to avoid PEP 668 "externally-managed-environment" errors
+          python3 -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade pip
+          # install tools without using pip cache to avoid permission issues in some environments
+          pip install --no-cache-dir pytest pytest-cov coverage || true
 
       - name: Generate Python per-package coverage reports (best-effort)
         run: |
@@ -65,14 +69,14 @@ jobs:
               if [ -d "$pkg/tests" ] || [ -d "$pkg/test" ] || ls "$pkg"/*test* >/dev/null 2>&1; then
                 echo "Running pytest for package: $pkgname"
                 # Run pytest and emit coverage for this package
-                python3 -m pytest -q --maxfail=1 --disable-warnings --cov="$pkg" --cov-report=xml:coverage-${pkgname}.xml || echo "pytest failed for $pkgname, continuing"
+                . .venv/bin/activate && python -m pytest -q --maxfail=1 --disable-warnings --cov="$pkg" --cov-report=xml:coverage-${pkgname}.xml || echo "pytest failed for $pkgname, continuing"
               else
                 echo "No pytest tests found for $pkgname, skipping"
               fi
             fi
           done
           # Also attempt a top-level pytest run to capture any tests that span packages
-          if python3 -m pytest -q --maxfail=1 --disable-warnings --cov=src --cov-report=xml:coverage.xml; then
+          if . .venv/bin/activate && python -m pytest -q --maxfail=1 --disable-warnings --cov=src --cov-report=xml:coverage.xml; then
             echo "Top-level pytest coverage generated"
           else
             echo "Top-level pytest run failed or no tests found; continuing."
